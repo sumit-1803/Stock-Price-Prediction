@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Upload CSV File</title>
+    <link rel="stylesheet" href="../static/styles.css">
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <nav>
+        <ul>
+            <li><a href="\">HOME</a></li>
+            <li><a href="#">ABOUT</a></li>
+            <li><a href="#">CONTACT US</a></li>
+        </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <main>
+        <section>
+            <h2>Upload CSV File</h2>
+            <input type="file" id="fileInput" accept=".csv" required>
+            <button onclick="uploadFile()" class="btn-upload">Upload</button>
+        </section>
+
+        <!-- Display a message if the file was uploaded successfully -->
+        <section id="successMessage" style="display: none;">
+            <h2>File Uploaded Successfully!</h2>
+            <p>Click the button below to analyze the uploaded data.</p>
+            <button onclick="runAnalysis()" class="btn-run-analysis">Run Analysis</button>
+            <button onclick="viewTable()" class="btn-run-analysis">View Table</button>
+
+        </section>
+
+        <!-- Display the table here if it exists -->
+        <section id="tableSection" style="display: none;">
+            <h2>Uploaded CSV Data</h2>
+            <div id="uploadedTable"></div>
+        </section>
+
+        <!-- Analysis Results Section -->
+        <section id="analysisResults" style="display: none;">
+            <h2>Analysis Results</h2>
+            <!-- Analysis results will be displayed here -->
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2024 SPP. All rights reserved.</p>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        function uploadFile() {
+            var fileInput = document.getElementById('fileInput');
+            var file = fileInput.files[0];
+            var formData = new FormData();
+            formData.append('file', file);
+
+            fetch('/upload', {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => {
+                    if (response.ok) {
+                        return response.text();
+                    } else {
+                        throw new Error('Upload failed');
+                    }
+                })
+                .then(data => {
+                    document.getElementById('successMessage').style.display = 'block';
+                    document.getElementById('viewTableSection').style.display = 'block';
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        }
+
+        function viewTable() {
+            window.location.href = '/view_table';
+        }
+
+
+        function runAnalysis() {
+            fetch('/analyze', {
+                method: 'POST'
+            })
+                .then(response => {
+                    if (response.ok) {
+                        return response.text();
+                    } else {
+                        throw new Error('Analysis failed');
+                    }
+                })
+                .then(data => {
+                    document.getElementById('analysisResults').innerHTML = data;
+                    document.getElementById('analysisResults').style.display = 'block';
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        }
+
+    </script>
+
+</body>
+
+</html>
